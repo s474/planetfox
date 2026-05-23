@@ -26,7 +26,8 @@
     async function loadRandom(autoplay = false) {
         setStatus('Loading...');
         try {
-            const res = await fetch(`${API}?action=random`);
+            const url = currentId ? `${API}?action=random&exclude=${currentId}` : `${API}?action=random`;
+            const res = await fetch(url);
             if (!res.ok) throw new Error('No tracks available');
             const track = await res.json();
             setTrack(track);

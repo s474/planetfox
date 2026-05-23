@@ -40,7 +40,13 @@ if ($method === 'POST') {
 $action = $_GET['action'] ?? 'random';
 
 if ($action === 'random') {
-    $stmt = db()->query('SELECT id, filename, title, artist FROM tracks ORDER BY RAND() LIMIT 1');
+    $exclude = filter_input(INPUT_GET, 'exclude', FILTER_VALIDATE_INT);
+    if ($exclude) {
+        $stmt = db()->prepare('SELECT id, filename, title, artist FROM tracks WHERE id != ? ORDER BY RAND() LIMIT 1');
+        $stmt->execute([$exclude]);
+    } else {
+        $stmt = db()->query('SELECT id, filename, title, artist FROM tracks ORDER BY RAND() LIMIT 1');
+    }
     $track = $stmt->fetch();
     if (!$track) { http_response_code(404); echo json_encode(['error' => 'No tracks']); exit; }
     echo json_encode($track);
