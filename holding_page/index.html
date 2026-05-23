@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Planet Fox</title>
+<style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        height: 100%;
+        width: 100%;
+    }
+
+    body {
+        /* Tile the penguin image as the background */
+        background-image: url("314-3143508_pixel-art-penguin-1.png");
+        background-repeat: repeat;
+    }
+
+    .bouncer {
+        position: absolute;
+        height: auto;
+        pointer-events: none;
+    }
+</style>
+</head>
+<body>
+
+<img id="penguin" class="bouncer" src="314-3143508_pixel-art-penguin-1.png">
+<img id="gif1" class="bouncer" src="Under_construction_graphic.gif">
+<img id="gif2" class="bouncer" src="underconstruction.gif">
+<img id="png1" class="bouncer" src="spidertan_front.png">
+
+<script>
+    const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+    function makeBouncer(el, startX, startY, vx, vy) {
+        let x = startX, y = startY;
+        function step() {
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            const pw = el.offsetWidth;
+            const ph = el.offsetHeight;
+            x += vx; y += vy;
+            if (x <= 0 || x + pw >= w) vx = -vx;
+            if (y <= 0 || y + ph >= h) vy = -vy;
+            el.style.left = x + "px";
+            el.style.top  = y + "px";
+            requestAnimationFrame(step);
+        }
+        step();
+    }
+
+    makeBouncer(document.getElementById("penguin"),  100, 100,  3,  2);
+    makeBouncer(document.getElementById("gif1"),     300, 200, -4,  3);
+    makeBouncer(document.getElementById("gif2"),     500, 150,  2, -3);
+    makeBouncer(document.getElementById("png1"),     700, 100,  0, 0);
+
+    function randomize() {
+        document.body.style.backgroundSize = rand(64, 1200) + "px";
+        document.getElementById("penguin").style.width = rand(62, 1200) + "px";
+        document.getElementById("gif1").style.width    = rand(62, 1200) + "px";
+        document.getElementById("gif2").style.width    = rand(62, 1200) + "px";
+        document.getElementById("png1").style.width    = rand(62, 1200) + "px";
+    }
+
+    randomize();
+    setInterval(randomize, 66);
+</script>
+
+</body>
+</html>

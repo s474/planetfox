@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Bouncing Penguin</title>
+<style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        height: 100%;
+        width: 100%;
+    }
+
+    body {
+        /* Tile the penguin image as the background */
+        background-image: url("314-3143508_pixel-art-penguin-1.png");
+        background-repeat: repeat;
+        background-size: 64px; /* Adjust tile size as desired */
+    }
+
+    #penguin {
+        position: absolute;
+        width: 128px;
+        height: auto;
+        pointer-events: none;
+    }
+</style>
+</head>
+<body>
+
+<img id="penguin" src="314-3143508_pixel-art-penguin-1.png">
+
+<script>
+    const penguin = document.getElementById("penguin");
+
+    let x = 100;
+    let y = 100;
+    let vx = 3;
+    let vy = 2;
+
+    function animate() {
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        const pw = penguin.offsetWidth;
+        const ph = penguin.offsetHeight;
+
+        x += vx;
+        y += vy;
+
+        if (x <= 0 || x + pw >= w) vx = -vx;
+        if (y <= 0 || y + ph >= h) vy = -vy;
+
+        penguin.style.left = x + "px";
+        penguin.style.top = y + "px";
+
+        requestAnimationFrame(animate);
+    }
+
+    animate();
+</script>
+
+</body>
+</html>
