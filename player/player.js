@@ -8,8 +8,9 @@
     const fillEl    = document.getElementById('progress-fill');
     const statusEl  = document.getElementById('status');
 
-    const API = 'api/tracks.php';
-    const STREAM = 'api/stream.php';
+    const BASE   = (document.currentScript?.src || '').replace(/player\.js$/, '');
+    const API    = BASE + 'api/tracks.php';
+    const STREAM = BASE + 'api/stream.php';
 
     let currentId = null;
 
@@ -26,8 +27,7 @@
     async function loadRandom(autoplay = false) {
         setStatus('Loading...');
         try {
-            const url = currentId ? `${API}?action=random&exclude=${currentId}` : `${API}?action=random`;
-            const res = await fetch(url);
+            const res = await fetch(`${API}?action=random`);
             if (!res.ok) throw new Error('No tracks available');
             const track = await res.json();
             setTrack(track);

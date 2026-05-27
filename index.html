@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Planet Fox</title>
+<link rel="stylesheet" href="player/player.css">
+<style>
+    html, body {
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+        height: 100%;
+        width: 100%;
+    }
+
+    body {
+        /* Tile the penguin image as the background */
+        background-image: url("holding_page/314-3143508_pixel-art-penguin-1.png");
+        background-repeat: repeat;
+    }
+
+    .bouncer {
+        position: absolute;
+        height: auto;
+        pointer-events: none;
+    }
+</style>
+</head>
+<body>
+
+<img class="bouncer" src="holding_page/314-3143508_pixel-art-penguin-1.png">
+<img class="bouncer" src="holding_page/Under_construction_graphic.gif">
+<img class="bouncer" src="holding_page/underconstruction.gif">
+<img class="bouncer" src="holding_page/spidertan_front.png">
+<img class="bouncer" src="holding_page/WELCOME/aavicki_bakewel2.gif">
+<img class="bouncer" src="holding_page/WELCOME/aavicki_banbear.gif">
+<img class="bouncer" src="holding_page/WELCOME/aavicki_bancat.gif">
+<img class="bouncer" src="holding_page/WELCOME/aavicki_bangirls.gif">
+<img class="bouncer" src="holding_page/WELCOME/aavicki_banguit.gif">
+<img class="bouncer" src="holding_page/WELCOME/aavicki_banmous2.gif">
+<img class="bouncer" src="holding_page/WELCOME/aavicki_banword1.gif">
+<img class="bouncer" src="holding_page/WELCOME/aavicki_banword2.gif">
+<img class="bouncer" src="holding_page/WELCOME/aavicki_daisyban.gif">
+<img class="bouncer" src="holding_page/WELCOME/boogie_welcome.gif">
+<img class="bouncer" src="holding_page/WELCOME/dramab.gif">
+<img class="bouncer" src="holding_page/WELCOME/gbarn_welcome_a.gif">
+<img class="bouncer" src="holding_page/WELCOME/generic9.gif">
+<img class="bouncer" src="holding_page/WELCOME/ladyohban_welcome1.gif">
+<img class="bouncer" src="holding_page/WELCOME/ladyohban_welcome2.gif">
+<img class="bouncer" src="holding_page/WELCOME/pat_blackrosehead.gif">
+<img class="bouncer" src="holding_page/WELCOME/pat_LRb-head.gif">
+<img class="bouncer" src="holding_page/WELCOME/pat_peperhead.gif">
+<img class="bouncer" src="holding_page/WELCOME/pat_R-rose1heada.gif">
+<img class="bouncer" src="holding_page/WELCOME/sharon_welcome1.gif">
+<img class="bouncer" src="holding_page/WELCOME/sharon_welcome3.gif">
+<img class="bouncer" src="holding_page/WELCOME/sharon_welcome5.gif">
+<img class="bouncer" src="holding_page/WELCOME/sharon_welcome6.gif">
+<img class="bouncer" src="holding_page/WELCOME/sharon_welcome7.gif">
+<img class="bouncer" src="holding_page/WELCOME/sharon_welcome8.gif">
+<img class="bouncer" src="holding_page/WELCOME/spider1.gif">
+<img class="bouncer" src="holding_page/WELCOME/toc_ballwel.gif">
+<img class="bouncer" src="holding_page/WELCOME/toc_blkwel.gif">
+<img class="bouncer" src="holding_page/WELCOME/toc_decwel.gif">
+<img class="bouncer" src="holding_page/IMG_20260523_211606.jpg">
+
+
+
+<script>
+    const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+    const randF = (min, max) => Math.random() * (max - min) + min;
+    const sign  = () => Math.random() < 0.5 ? 1 : -1;
+
+    function makeBouncer(el) {
+        let x = rand(0, window.innerWidth  - 100);
+        let y = rand(0, window.innerHeight - 100);
+        let vx = randF(1.5, 4) * sign();
+        let vy = randF(1.5, 4) * sign();
+        function step() {
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+            const pw = el.offsetWidth;
+            const ph = el.offsetHeight;
+            x += vx; y += vy;
+            if (x <= 0 || x + pw >= w) vx = -vx;
+            if (y <= 0 || y + ph >= h) vy = -vy;
+            el.style.left = x + "px";
+            el.style.top  = y + "px";
+            requestAnimationFrame(step);
+        }
+        step();
+    }
+
+    const bouncers = Array.from(document.querySelectorAll('.bouncer'));
+
+    function randomize() {
+        document.body.style.backgroundSize = rand(64, 1200) + "px";
+        bouncers.forEach(el => el.style.width = rand(62, 400) + "px");
+    }
+
+    randomize();
+    setInterval(randomize, 66);
+
+    // Start bouncing after images have a size
+    window.addEventListener('load', () => bouncers.forEach(makeBouncer));
+</script>
+
+<div class="player">
+    <h1>Planet Fox Radio</h1>
+
+    <div class="now-playing">
+        <div class="track-title" id="track-title">—</div>
+        <div class="track-artist" id="track-artist"></div>
+    </div>
+
+    <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+    </div>
+
+    <div class="controls">
+        <button class="btn" id="btn-play">&#9654; Play</button>
+        <button class="btn" id="btn-stop">&#9632; Stop</button>
+        <button class="btn" id="btn-next">&#9197; Next</button>
+    </div>
+
+    <div class="status" id="status"></div>
+</div>
+
+<audio id="audio" preload="metadata"></audio>
+
+<script src="player/player.js"></script>
+
+</body>
+</html>
