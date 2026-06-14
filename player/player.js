@@ -27,8 +27,26 @@
     async function loadRandom(autoplay = false) {
         setStatus('Loading...');
         try {
-            const res = await fetch(`${API}?action=random`);
+            const url = currentId ? `${API}?action=random&exclude=${currentId}` : `${API}?action=random`;
+            const res = await fetch(url);
             if (!res.ok) throw new Error('No tracks available');
+            const track = await res.json();
+            setTrack(track);
+            if (autoplay) {
+                await audio.play();
+                btnPlay.classList.add('active');
+            }
+            setStatus('');
+        } catch (e) {
+            setStatus(e.message);
+        }
+    }
+
+    async function loadTrack(id, autoplay = false) {
+        setStatus('Loading...');
+        try {
+            const res = await fetch(`${API}?action=play&id=${id}`);
+            if (!res.ok) throw new Error('Track not found');
             const track = await res.json();
             setTrack(track);
             if (autoplay) {
@@ -78,10 +96,15 @@
     });
 
     audio.addEventListener('error', () => {
-        setStatus('Error loading track — try Next');
+        setStatus('Error loading, track try Next');
         btnPlay.classList.remove('active');
     });
 
-    // Load a track on page ready (don't autoplay — browsers block it without interaction)
-    loadRandom(false);
+    // Load a track on page ready (don't autoplay, browsers block it without interaction)
+    const requestedId = new URLSearchParams(window.location.search).get('track');
+    if (requestedId) {
+        loadTrack(requestedId, false);
+    } else {
+        loadRandom(false);
+    }
 })();

@@ -53,6 +53,18 @@ if ($action === 'random') {
     exit;
 }
 
+if ($action === 'play') {
+    $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
+    if (!$id) { http_response_code(400); echo json_encode(['error' => 'Invalid id']); exit; }
+
+    $stmt = db()->prepare('SELECT id, filename, title, artist FROM tracks WHERE id = ?');
+    $stmt->execute([$id]);
+    $track = $stmt->fetch();
+    if (!$track) { http_response_code(404); echo json_encode(['error' => 'Not found']); exit; }
+    echo json_encode($track);
+    exit;
+}
+
 if ($action === 'list') {
     $stmt = db()->query('
         SELECT id, filename, title, artist, votes_up, votes_down, play_count
