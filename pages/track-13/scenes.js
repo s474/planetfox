@@ -18,7 +18,15 @@ export const scenes = [
     },
     {
         end_time: null,
-        enter() { startParticles(); },
-        exit()  { stopParticles(); },
+        enter() {
+            startParticles({
+                slideshowImages: [
+                    '../../images/worzel1.jpg',
+                    '../../images/worzel2.jpg',
+                    '../../images/worzel3.jpg',
+                ],
+            });
+        },
+        exit() { stopParticles(); },
     },
 ];
