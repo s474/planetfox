@@ -57,19 +57,33 @@ export function goToScene(n) {
 // --- Overlay ---
 
 let _overlayEl;
+let _promptEl;
 let _overlayVisible = true;
+let _title = '';
 
 function createOverlay() {
     _overlayEl = document.createElement('div');
     _overlayEl.id = 'pf-overlay';
     document.body.appendChild(_overlayEl);
     updateOverlay();
+
+    if (!PERF_MODE) {
+        _promptEl = document.createElement('div');
+        _promptEl.id = 'pf-prompt';
+        _promptEl.textContent = 'PRESS SPACE TO START';
+        document.body.appendChild(_promptEl);
+    }
 }
 
 function updateOverlay() {
     if (!_overlayEl) return;
+    const titleLine = _title ? `${_title}\n` : '';
     _overlayEl.textContent =
-        `${_currentIndex + 1} / ${_scenes.length}${PERF_MODE ? ' · PERF' : ''}  [H] hide`;
+        `${titleLine}${_currentIndex + 1} / ${_scenes.length}${PERF_MODE ? ' · PERF' : ''}  [H] hide`;
+}
+
+function hidePrompt() {
+    if (_promptEl) { _promptEl.remove(); _promptEl = null; }
 }
 
 function toggleOverlay() {
@@ -193,6 +207,7 @@ function setupFileAudio(src) {
 
     // Set up analyser on first play (AudioContext requires a user gesture first)
     _audioEl.addEventListener('play', () => {
+        hidePrompt();
         if (analyser) return;
         const ctx = new AudioContext();
         analyser = ctx.createAnalyser();
@@ -210,6 +225,7 @@ export function init(scenes, options = {}) {
 
     if (options.bpm         != null) bpm         = options.bpm;
     if (options.beat_offset != null) beat_offset = options.beat_offset;
+    if (options.title       != null) _title      = options.title;
 
     createOverlay();
     setupKeyboard();
