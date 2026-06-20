@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Planet Fox — Track 13</title>
+<link rel="stylesheet" href="../_base.css">
+</head>
+<body>
+<script type="module">
+    import { init }   from '../_base.js';
+    import { scenes } from './scenes.js';
+
+    const TRACK_ID = 13;
+    const API      = '../../player/api/tracks.php';
+    const STREAM   = `../../player/api/stream.php?id=${TRACK_ID}`;
+
+    const res   = await fetch(`${API}?action=play&id=${TRACK_ID}`);
+    const track = await res.json();
+
+    init(scenes, {
+        audioSrc:    STREAM,
+        bpm:         track.bpm,
+        beat_offset: track.beat_offset,
+        title:       track.title,
+    });
+</script>
+</body>
+</html>
