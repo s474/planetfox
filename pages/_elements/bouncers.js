@@ -1,3 +1,5 @@
+import { getAudioTime, bpm, beat_offset } from '../_base.js';
+
 let _els = [];
 let _rafId = null;
 let _resizeId = null;
@@ -7,19 +9,22 @@ const randF = (min, max) => Math.random() * (max - min) + min;
 const sign  = ()         => Math.random() < 0.5 ? 1 : -1;
 
 /**
- * startBouncers({ images, minWidth, maxWidth, randomizeMs, container })
+ * startBouncers({ images, minWidth, maxWidth, randomizeMs, syncBpm, container })
  *   images       — array of src strings
  *   minWidth     — minimum px width (default 60)
  *   maxWidth     — maximum px width (default 300)
  *   randomizeMs  — interval in ms to randomise sizes, 0 to disable (default 66)
+ *                  ignored when syncBpm is true
+ *   syncBpm      — randomise sizes on each beat instead of on a timer (default false)
  *   container    — DOM element to append to (default document.body)
  */
 export function startBouncers({
-    images     = [],
-    minWidth   = 60,
-    maxWidth   = 300,
+    images      = [],
+    minWidth    = 60,
+    maxWidth    = 300,
     randomizeMs = 66,
-    container  = document.body,
+    syncBpm     = false,
+    container   = document.body,
 } = {}) {
     stopBouncers();
 
@@ -32,7 +37,6 @@ export function startBouncers({
         return img;
     });
 
-    // Give images a tick to get their natural sizes before bouncing
     requestAnimationFrame(() => {
         const states = _els.map(el => ({
             el,
@@ -41,6 +45,12 @@ export function startBouncers({
             vx: randF(1.5, 4) * sign(),
             vy: randF(1.5, 4) * sign(),
         }));
+
+        const randomizeSizes = () => {
+            for (const s of states) s.el.style.width = rand(minWidth, maxWidth) + 'px';
+        };
+
+        let lastBeat = -1;
 
         function step() {
             const W = window.innerWidth;
@@ -54,16 +64,24 @@ export function startBouncers({
                 s.el.style.left = s.x + 'px';
                 s.el.style.top  = s.y + 'px';
             }
+
+            if (syncBpm && bpm) {
+                const t = getAudioTime() - beat_offset;
+                if (t >= 0) {
+                    const beat = Math.floor(t * bpm / 60);
+                    if (beat !== lastBeat) {
+                        lastBeat = beat;
+                        randomizeSizes();
+                    }
+                }
+            }
+
             _rafId = requestAnimationFrame(step);
         }
         step();
 
-        if (randomizeMs > 0) {
-            _resizeId = setInterval(() => {
-                for (const s of states) {
-                    s.el.style.width = rand(minWidth, maxWidth) + 'px';
-                }
-            }, randomizeMs);
+        if (!syncBpm && randomizeMs > 0) {
+            _resizeId = setInterval(randomizeSizes, randomizeMs);
         }
     });
 }

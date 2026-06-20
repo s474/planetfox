@@ -11,6 +11,12 @@ export let analyser    = null; // available to elements for visualisers
 export let bpm         = null; // beats per minute for the current track
 export let beat_offset = 0;    // seconds to the first beat
 
+export function getAudioTime() {
+    if (_audioEl) return _audioEl.currentTime;
+    if (_perfStartTime != null) return (performance.now() - _perfStartTime) / 1000;
+    return 0;
+}
+
 // --- Scene engine ---
 
 function runScene(index) {
@@ -184,6 +190,17 @@ function setupFileAudio(src) {
     _audioEl.src = src;
     _audioEl.preload = 'metadata';
     document.body.appendChild(_audioEl);
+
+    // Set up analyser on first play (AudioContext requires a user gesture first)
+    _audioEl.addEventListener('play', () => {
+        if (analyser) return;
+        const ctx = new AudioContext();
+        analyser = ctx.createAnalyser();
+        analyser.fftSize = 2048;
+        const source = ctx.createMediaElementSource(_audioEl);
+        source.connect(analyser);
+        analyser.connect(ctx.destination);
+    }, { once: true });
 }
 
 // --- Init ---

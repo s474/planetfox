@@ -1,6 +1,7 @@
 import { startBouncers, stopBouncers } from '../_elements/bouncers.js';
+import { startStrobe,   stopStrobe   } from '../_elements/strobe.js';
+import { startPulse,    stopPulse    } from '../_elements/pulse.js';
 
-// Paths relative to this file's location
 const WELCOME = '../../holding_page/WELCOME/';
 
 const welcomeImages = [
@@ -16,21 +17,6 @@ const welcomeImages = [
     'toc_blkwel.gif',       'toc_decwel.gif',
 ].map(f => WELCOME + f);
 
-// --- Scene 2 helpers ---
-
-let _pulseEl = null;
-
-function startPulse() {
-    _pulseEl = document.createElement('div');
-    _pulseEl.id = 'pf-pulse';
-    _pulseEl.innerHTML = '<span>PLANET FOX</span>';
-    document.body.appendChild(_pulseEl);
-}
-
-function stopPulse() {
-    if (_pulseEl) { _pulseEl.remove(); _pulseEl = null; }
-}
-
 // --- Scenes ---
 
 export const scenes = [
@@ -38,21 +24,38 @@ export const scenes = [
         end_time: 10.081,
         enter() {
             document.body.style.background = '#000';
-            startBouncers({ images: welcomeImages, minWidth: 60, maxWidth: 280 });
+            startBouncers({ images: welcomeImages, minWidth: 60, maxWidth: 280, syncBpm: true });
         },
         exit() {
             stopBouncers();
         },
     },
     {
-        duration: null,
+        end_time: 17.734,
         enter() {
-            document.body.style.background = '#000';
             startPulse();
         },
         exit() {
             stopPulse();
-            document.body.style.background = '#000';
+        },
+    },
+    {
+        end_time: 33.471,
+        enter() {
+            startStrobe({ flashesPerBeat: 1, flashDuration: 60 });
+        },
+        exit() {
+            stopStrobe();
+        },
+    },
+    {
+        end_time: null,
+        enter() {
+            document.body.style.background = '#890d0d';
+            startBouncers({ images: welcomeImages, minWidth: 60, maxWidth: 2800, syncBpm: true });
+        },
+        exit() {
+            stopBouncers();
         },
     },
 ];
