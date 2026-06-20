@@ -57,7 +57,7 @@ if ($action === 'play') {
     $id = filter_input(INPUT_GET, 'id', FILTER_VALIDATE_INT);
     if (!$id) { http_response_code(400); echo json_encode(['error' => 'Invalid id']); exit; }
 
-    $stmt = db()->prepare('SELECT id, filename, title, artist FROM tracks WHERE id = ?');
+    $stmt = db()->prepare('SELECT id, filename, title, artist, bpm, beat_offset FROM tracks WHERE id = ?');
     $stmt->execute([$id]);
     $track = $stmt->fetch();
     if (!$track) { http_response_code(404); echo json_encode(['error' => 'Not found']); exit; }

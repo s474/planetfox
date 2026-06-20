@@ -1,0 +1,35 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #000;
+    color: #fff;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.pf-cursor-hidden { cursor: none; }
+
+/* Scene overlay — top-right corner */
+#pf-overlay {
+    position: fixed;
+    top: 0.75rem;
+    right: 1rem;
+    z-index: 9999;
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.4);
+    pointer-events: none;
+    letter-spacing: 0.05em;
+}
+
+/* Bouncer base */
+.bouncer {
+    position: absolute;
+    height: auto;
+    pointer-events: none;
+}
+
+/* Fullscreen */
+:fullscreen      { background: #000; }
+:-webkit-full-screen { background: #000; }
