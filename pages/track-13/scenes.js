@@ -1,6 +1,7 @@
 import { startScope,     stopScope     } from '../_elements/scope.js';
 import { startStrobe,    stopStrobe    } from '../_elements/strobe.js';
 import { startParticles, stopParticles } from '../_elements/particles.js';
+import { startVideo, stopVideo } from '../_elements/video.js';
 
 export const scenes = [
     {
@@ -28,5 +29,16 @@ export const scenes = [
             });
         },
         exit() { stopParticles(); },
+    },
+    {
+        end_time: null,
+        enter() {
+            startVideo({ clips: '../../video/foxpenguins1_lo.mp4', playbackRate: 1 });
+            startStrobe({ flashesPerBeat: 2, flashDuration: 60, color: '#ff5ad9' });
+        },
+        exit() { 
+            stopVideo(); 
+            stopStrobe();
+        },
     },
 ];

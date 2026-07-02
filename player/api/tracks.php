@@ -67,7 +67,7 @@ if ($action === 'play') {
 
 if ($action === 'list') {
     $stmt = db()->query('
-        SELECT id, filename, title, artist, votes_up, votes_down, play_count
+        SELECT id, filename, title, artist, votes_up, votes_down, play_count, bpm, beat_offset
         FROM tracks
         ORDER BY title ASC
     ');
