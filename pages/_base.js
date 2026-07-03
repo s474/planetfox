@@ -3,7 +3,7 @@ export const PERF_MODE = params.get('perf') === '1';
 
 let _scenes = [];
 let _currentIndex = -1;
-let _autoTimer = null;
+let _timingRaf = null;
 let _audioEl = null;
 let _perfStartTime = null; // performance.now() when perf audio was first detected
 
@@ -19,27 +19,38 @@ export function getAudioTime() {
 
 // --- Scene engine ---
 
+// rAF loop polls audio.currentTime each frame rather than calculating a setTimeout
+// delay upfront. This is immune to buffering delays that make currentTime jump.
+function startTimingLoop() {
+    if (_timingRaf) return;
+    (function tick() {
+        const scene = _scenes[_currentIndex];
+        if (scene && scene.end_time != null && getAudioTime() >= scene.end_time) {
+            nextScene();
+            return;
+        }
+        _timingRaf = requestAnimationFrame(tick);
+    })();
+}
+
+function stopTimingLoop() {
+    if (_timingRaf) { cancelAnimationFrame(_timingRaf); _timingRaf = null; }
+}
+
 function runScene(index) {
     if (index < 0 || index >= _scenes.length) return;
 
     if (_currentIndex >= 0 && _scenes[_currentIndex].exit) {
         _scenes[_currentIndex].exit();
     }
-    clearTimeout(_autoTimer);
-    _autoTimer = null;
+    stopTimingLoop();
 
     _currentIndex = index;
     const scene = _scenes[_currentIndex];
     if (scene.enter) scene.enter();
     updateOverlay();
 
-    if (scene.end_time != null) {
-        const currentSec = _audioEl
-            ? _audioEl.currentTime
-            : _perfStartTime != null ? (performance.now() - _perfStartTime) / 1000 : 0;
-        const delay = (scene.end_time - currentSec) * 1000;
-        if (delay > 0) _autoTimer = setTimeout(() => nextScene(), delay);
-    }
+    if (scene.end_time != null) startTimingLoop();
 }
 
 export function nextScene() {
@@ -110,15 +121,20 @@ function toggleFullscreen() {
     }
 }
 
-// --- Scene 0 with beat_offset delay ---
+// --- Scene 0 start ---
 
+// Polls audio time in rAF (same as scene transitions) so the start is immune
+// to Safari's gap between play() resolving and audio actually producing output.
 function startFromBeginning() {
-    const delayMs = (beat_offset || 0) * 1000;
-    if (delayMs > 0) {
-        setTimeout(() => runScene(0), delayMs);
-    } else {
-        runScene(0);
-    }
+    // Use a tiny minimum so we only fire once currentTime is genuinely advancing.
+    const target = beat_offset > 0 ? beat_offset : 0.001;
+    (function waitForBeat() {
+        if (getAudioTime() >= target) {
+            runScene(0);
+        } else {
+            requestAnimationFrame(waitForBeat);
+        }
+    })();
 }
 
 // --- Keyboard ---
@@ -205,7 +221,7 @@ function setupFileAudio(src) {
     _audioEl.preload = 'metadata';
     document.body.appendChild(_audioEl);
 
-    // Set up analyser on first play (AudioContext requires a user gesture first)
+    // AudioContext must be created inside a user-gesture handler
     _audioEl.addEventListener('play', () => {
         hidePrompt();
         if (analyser) return;
@@ -216,6 +232,7 @@ function setupFileAudio(src) {
         source.connect(analyser);
         analyser.connect(ctx.destination);
     }, { once: true });
+
 }
 
 // --- Init ---

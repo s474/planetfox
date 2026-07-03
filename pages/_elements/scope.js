@@ -11,10 +11,8 @@ let _rafId  = null;
 export function startScope({ color = '#00ff00', lineWidth = 2 } = {}) {
     stopScope();
 
-    document.body.style.background = '#000';
-
     _canvas = document.createElement('canvas');
-    _canvas.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;';
+    _canvas.style.cssText = 'position:fixed;inset:0;width:100%;height:100%;pointer-events:none;';
     _canvas.width  = window.innerWidth;
     _canvas.height = window.innerHeight;
     document.body.appendChild(_canvas);
@@ -32,8 +30,7 @@ export function startScope({ color = '#00ff00', lineWidth = 2 } = {}) {
         const W = _canvas.width;
         const H = _canvas.height;
 
-        ctx.fillStyle = '#000';
-        ctx.fillRect(0, 0, W, H);
+        ctx.clearRect(0, 0, W, H);
 
         if (analyser) {
             const buf = new Uint8Array(analyser.frequencyBinCount);

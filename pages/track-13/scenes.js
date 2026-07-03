@@ -33,7 +33,7 @@ export const scenes = [
     {
         end_time: null,
         enter() {
-            startVideo({ clips: '../../video/foxpenguins1_lo.mp4', playbackRate: 1 });
+            startVideo({ clips: '../../video/foxpenguins1_lo.mp4', playbackRate: 15 });
             startStrobe({ flashesPerBeat: 2, flashDuration: 60, color: '#ff5ad9' });
         },
         exit() { 
